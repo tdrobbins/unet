@@ -30,6 +30,7 @@ class ConvBlock(layers.Layer):
                                       padding=padding)
         self.dropout_1 = layers.Dropout(rate=dropout_rate)
         self.activation_1 = layers.Activation(activation)
+	self.normalization_1 = layers.BatchNormalization()
 
         self.conv2d_2 = layers.Conv2D(filters=filters,
                                       kernel_size=(kernel_size, kernel_size),
@@ -38,6 +39,7 @@ class ConvBlock(layers.Layer):
                                       padding=padding)
         self.dropout_2 = layers.Dropout(rate=dropout_rate)
         self.activation_2 = layers.Activation(activation)
+	self.normalization_2 = layers.BatchNormalization()
 
     def call(self, inputs, training=None, **kwargs):
         x = inputs
@@ -46,12 +48,18 @@ class ConvBlock(layers.Layer):
         if training:
             x = self.dropout_1(x)
         x = self.activation_1(x)
-        x = self.conv2d_2(x)
 
+	if training:
+            x = self.normalization_1(x)
+
+        x = self.conv2d_2(x)
         if training:
             x = self.dropout_2(x)
 
         x = self.activation_2(x)
+	if training:
+            x = self.normalization_2(x)
+
         return x
 
     def get_config(self):
@@ -75,6 +83,7 @@ class UpconvBlock(layers.Layer):
         self.pool_size=pool_size
         self.padding=padding
         self.activation=activation
+	self.normalization = normalization
 
         filters = _get_filter_count(layer_idx + 1, filters_root)
         self.upconv = layers.Conv2DTranspose(filters // 2,
@@ -83,6 +92,7 @@ class UpconvBlock(layers.Layer):
                                              strides=pool_size, padding=padding)
 
         self.activation_1 = layers.Activation(activation)
+
 
     def call(self, inputs, **kwargs):
         x = inputs
@@ -128,7 +138,8 @@ def build_model(nx: Optional[int] = None,
                 pool_size: int = 2,
                 dropout_rate: int = 0.5,
                 padding:str="valid",
-                activation:Union[str, Callable]="relu") -> Model:
+                activation:Union[str, Callable]="relu",
+		normalization:) -> Model:
     """
     Constructs a U-Net model
 
