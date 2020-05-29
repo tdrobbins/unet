@@ -138,8 +138,7 @@ def build_model(nx: Optional[int] = None,
                 pool_size: int = 2,
                 dropout_rate: int = 0.5,
                 padding:str="valid",
-                activation:Union[str, Callable]="relu",
-		normalization:) -> Model:
+                activation:Union[str, Callable]="relu") -> Model:
     """
     Constructs a U-Net model
 
