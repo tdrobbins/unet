@@ -50,7 +50,7 @@ class ConvBlock(layers.Layer):
             x = self.dropout_1(x)
         x = self.activation_1(x)
 
-        if normalization:
+        if self.normalization:
             x = self.normalization_1(x,trainable = training)
 
         x = self.conv2d_2(x)
@@ -59,7 +59,7 @@ class ConvBlock(layers.Layer):
 
         x = self.activation_2(x)
 
-        if normalization:
+        if self.normalization:
             x = self.normalization_2(x,trainable = training)
 
         return x
@@ -98,12 +98,12 @@ class UpconvBlock(layers.Layer):
         self.normalization_1 = layers.BatchNormalization(scale = False)
 
 
-    def call(self, inputs, training = None **kwargs):
+    def call(self, inputs, training = None, **kwargs):
         x = inputs
         x = self.upconv(x)
         x = self.activation_1(x)
 
-        if normalization:
+        if self.normalization:
             x = self.normalization_1(x, trainable = training)
 
         return x
