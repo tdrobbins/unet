@@ -51,7 +51,7 @@ class ConvBlock(layers.Layer):
         x = self.activation_1(x)
 
         if self.normalization:
-            x = self.normalization_1(x,trainable = training)
+            x = self.normalization_1(x, training = training)
 
         x = self.conv2d_2(x)
         if training:
@@ -60,7 +60,7 @@ class ConvBlock(layers.Layer):
         x = self.activation_2(x)
 
         if self.normalization:
-            x = self.normalization_2(x,trainable = training)
+            x = self.normalization_2(x, training = training)
 
         return x
 
@@ -104,7 +104,7 @@ class UpconvBlock(layers.Layer):
         x = self.activation_1(x)
 
         if self.normalization:
-            x = self.normalization_1(x, trainable = training)
+            x = self.normalization_1(x, training = training)
 
         return x
 
