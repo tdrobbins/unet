@@ -115,7 +115,7 @@ class UpconvBlock(layers.Layer):
                     pool_size=self.pool_size,
                     padding=self.padding,
                     activation=self.activation,
-                    normalization = self.normalization
+                    normalization = self.normalization,
                     **super(UpconvBlock, self).get_config()
                     )
 
