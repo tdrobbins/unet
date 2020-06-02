@@ -13,7 +13,7 @@ import unet.metrics
 
 class ConvBlock(layers.Layer):
 
-    def __init__(self, layer_idx, filters_root, kernel_size, dropout_rate, padding, activation, normalization, **kwargs):
+    def __init__(self, layer_idx, filters_root, kernel_size, dropout_rate, padding, activation, **kwargs):
         super(ConvBlock, self).__init__(**kwargs)
         self.layer_idx=layer_idx
         self.filters_root=filters_root
