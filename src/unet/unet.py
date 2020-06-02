@@ -13,7 +13,7 @@ import unet.metrics
 
 class ConvBlock(layers.Layer):
 
-    def __init__(self, layer_idx, filters_root, kernel_size, dropout_rate, padding, activation, **kwargs):
+    def __init__(self, layer_idx, filters_root, kernel_size, dropout_rate, padding, activation, normalization, **kwargs):
         super(ConvBlock, self).__init__(**kwargs)
         self.layer_idx=layer_idx
         self.filters_root=filters_root
@@ -21,7 +21,7 @@ class ConvBlock(layers.Layer):
         self.dropout_rate=dropout_rate
         self.padding=padding
         self.activation=activation
-	self.normalization = normalization
+        self.normalization = normalization
 
         filters = _get_filter_count(layer_idx, filters_root)
         self.conv2d_1 = layers.Conv2D(filters=filters,
@@ -31,7 +31,7 @@ class ConvBlock(layers.Layer):
                                       padding=padding)
         self.dropout_1 = layers.Dropout(rate=dropout_rate)
         self.activation_1 = layers.Activation(activation)
-	self.normalization_1 = layers.BatchNormalization(scale = False)
+    self.normalization_1 = layers.BatchNormalization(scale = False)
 
         self.conv2d_2 = layers.Conv2D(filters=filters,
                                       kernel_size=(kernel_size, kernel_size),
@@ -40,7 +40,7 @@ class ConvBlock(layers.Layer):
                                       padding=padding)
         self.dropout_2 = layers.Dropout(rate=dropout_rate)
         self.activation_2 = layers.Activation(activation)
-	self.normalization_2 = layers.BatchNormalization(scale = False)
+    self.normalization_2 = layers.BatchNormalization(scale = False)
 
     def call(self, inputs, training=None, **kwargs):
         x = inputs
@@ -50,17 +50,17 @@ class ConvBlock(layers.Layer):
             x = self.dropout_1(x)
         x = self.activation_1(x)
 
-	if normalization:
-        	x = self.normalization_1(x,trainable = training)
+    if normalization:
+            x = self.normalization_1(x,trainable = training)
 
         x = self.conv2d_2(x)
         if training:
             x = self.dropout_2(x)
 
         x = self.activation_2(x)
-	
-	if normalization:
-        	x = self.normalization_2(x,trainable = training)
+    
+    if normalization:
+            x = self.normalization_2(x,trainable = training)
 
         return x
 
@@ -71,7 +71,7 @@ class ConvBlock(layers.Layer):
                     dropout_rate=self.dropout_rate,
                     padding=self.padding,
                     activation=self.activation,
-	            normalization = self.normalization
+                normalization = self.normalization
                     **super(ConvBlock, self).get_config(),
                     )
 
@@ -86,7 +86,7 @@ class UpconvBlock(layers.Layer):
         self.pool_size=pool_size
         self.padding=padding
         self.activation=activation
-	self.normalization = normalization
+    self.normalization = normalization
 
         filters = _get_filter_count(layer_idx + 1, filters_root)
         self.upconv = layers.Conv2DTranspose(filters // 2,
@@ -95,7 +95,7 @@ class UpconvBlock(layers.Layer):
                                              strides=pool_size, padding=padding)
 
         self.activation_1 = layers.Activation(activation)
-	self.normalization_1 = layers.BatchNormalization(scale = False)
+    self.normalization_1 = layers.BatchNormalization(scale = False)
 
 
     def call(self, inputs, training = None **kwargs):
@@ -103,8 +103,8 @@ class UpconvBlock(layers.Layer):
         x = self.upconv(x)
         x = self.activation_1(x)
 
-	if normalization:
-        	x = self.normalization_1(x, trainable = training)
+    if normalization:
+            x = self.normalization_1(x, trainable = training)
 
         return x
 
@@ -115,7 +115,7 @@ class UpconvBlock(layers.Layer):
                     pool_size=self.pool_size,
                     padding=self.padding,
                     activation=self.activation,
-		    normalization = self.normalization
+            normalization = self.normalization
                     **super(UpconvBlock, self).get_config()
                     )
 
@@ -148,7 +148,7 @@ def build_model(nx: Optional[int] = None,
                 dropout_rate: int = 0.5,
                 padding:str="valid",
                 activation:Union[str, Callable]="relu",
-		normalization: bool = True) -> Model:
+                normalization: bool = False) -> Model:
     """
     Constructs a U-Net model
 
@@ -177,7 +177,7 @@ def build_model(nx: Optional[int] = None,
                        dropout_rate=dropout_rate,
                        padding=padding,
                        activation=activation,
-		       normalization = normalization)
+               normalization = normalization)
 
     for layer_idx in range(0, layer_depth - 1):
         x = ConvBlock(layer_idx, **conv_params)(x)
@@ -193,7 +193,7 @@ def build_model(nx: Optional[int] = None,
                         pool_size,
                         padding,
                         activation,
-			normalization)(x)
+            normalization)(x)
         x = CropConcatBlock()(x, contracting_layers[layer_idx])
         x = ConvBlock(layer_idx, **conv_params)(x)
 
