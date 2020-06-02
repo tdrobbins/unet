@@ -71,7 +71,7 @@ class ConvBlock(layers.Layer):
                     dropout_rate=self.dropout_rate,
                     padding=self.padding,
                     activation=self.activation,
-                    normalization = self.normalization
+                    normalization = self.normalization,
                     **super(ConvBlock, self).get_config(),
                     )
 
